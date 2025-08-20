@@ -41,22 +41,20 @@ def decode_protobuf(encoded_data: bytes, message_type: Message) -> Message:
 
 
 # --- Funções principais ---
+# E modifique também a função get_access_token
 async def get_access_token(uid: str, password: str) -> Tuple[str, str, int]:
-    url = "https://ffmconnect.live.gop.garenanow.com/oauth/guest/token/grant"
-    payload = f"uid={uid}&password={password}&response_type=token&client_type=2&client_secret=2ee44819e9b4598845141067b281621874d0d5d7af9d8f7e00c1e54715b7d1e3&client_id=100067"
-    headers = {
-        'User-Agent': USERAGENT,
-        'Connection': "Keep-Alive",
-        'Content-Type': "application/x-www-form-urlencoded"
-    }
+    # ... (código da URL, payload, headers)
     try:
+        print("--- DEBUG: 2. Chamando get_access_token para o servidor da Garena...") # <--- ADICIONE AQUI
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(url, data=payload, headers=headers)
+            print("--- DEBUG: 3. Servidor da Garena respondeu.") # <--- ADICIONE AQUI
             if response.status_code == 200:
                 data = response.json()
                 return data.get("access_token", "0"), data.get("open_id", "0"), 200
             return "0", "0", response.status_code
-    except httpx.RequestError:
+    except httpx.RequestError as e:
+        print(f"--- DEBUG: ERRO na requisição httpx: {e}") # <--- ADICIONE AQUI
         return "0", "0", 500
 
 
@@ -112,6 +110,7 @@ async def create_jwt(uid: str, password: str) -> Tuple[str, str, int]:
 # --- Rota da API ---
 @app.get("/create_jwt")
 async def generate_jwt(uid: str = Query(..., description="User ID"), password: str = Query(..., description="User Password")):
+    print("--- DEBUG: 1. Rota /create_jwt foi chamada.") # <--- ADICIONE AQUI
     token, access_token, status_code = await create_jwt(uid, password)
     
     response_data = {
@@ -124,4 +123,6 @@ async def generate_jwt(uid: str = Query(..., description="User ID"), password: s
     else:
         response_data["status"] = f"error_{status_code}"
 
+    print(f"--- DEBUG: 4. Retornando resposta: {response_data}") # <--- ADICIONE AQUI
     return response_data
+
