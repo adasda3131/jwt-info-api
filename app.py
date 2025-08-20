@@ -42,20 +42,32 @@ def decode_protobuf(encoded_data: bytes, message_type: Message) -> Message:
 
 # --- Funções principais ---
 # E modifique também a função get_access_token
+    
 async def get_access_token(uid: str, password: str) -> Tuple[str, str, int]:
-    # ... (código da URL, payload, headers)
+    # --- ESTAS LINHAS PRECISAM ESTAR AQUI ---
+    url = "https://ffmconnect.live.gop.garenanow.com/oauth/guest/token/grant"
+    payload = f"uid={uid}&password={password}&response_type=token&client_type=2&client_secret=2ee44819e9b4598845141067b281621874d0d5d7af9d8f7e00c1e54715b7d1e3&client_id=100067"
+    headers = {
+        'User-Agent': USERAGENT,
+        'Connection': "Keep-Alive",
+        'Content-Type': "application/x-www-form-urlencoded"
+    }
+    # ----------------------------------------
+    
     try:
-        print("--- DEBUG: 2. Chamando get_access_token para o servidor da Garena...") # <--- ADICIONE AQUI
+        print("--- DEBUG: 2. Chamando get_access_token para o servidor da Garena...")
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(url, data=payload, headers=headers)
-            print("--- DEBUG: 3. Servidor da Garena respondeu.") # <--- ADICIONE AQUI
+            print("--- DEBUG: 3. Servidor da Garena respondeu.")
             if response.status_code == 200:
                 data = response.json()
                 return data.get("access_token", "0"), data.get("open_id", "0"), 200
             return "0", "0", response.status_code
     except httpx.RequestError as e:
-        print(f"--- DEBUG: ERRO na requisição httpx: {e}") # <--- ADICIONE AQUI
+        print(f"--- DEBUG: ERRO na requisição httpx: {e}")
         return "0", "0", 500
+
+  
 
 
 async def create_jwt(uid: str, password: str) -> Tuple[str, str, int]:
