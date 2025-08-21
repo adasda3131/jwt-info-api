@@ -146,14 +146,13 @@ async def generate_jwt(uid: str = Query(..., description="User ID"), password: s
 # --- Bloco para iniciar o servidor ---
 # Este bloco será executado apenas quando você rodar o script diretamente (ex: python app.py)
 if __name__ == "__main__":
-    # O Railway define a variável de ambiente 'PORT'. Usamos ela se estiver disponível.
-    # Caso contrário (rodando localmente), usamos a porta 8000 como padrão.
-    port = int(os.environ.get("PORT", 80))
+    # Pega a porta do ambiente do Railway, ou usa 5552 como padrão local
+    port = int(os.environ.get("PORT", 5552))
     
-    # Inicia o servidor Uvicorn.
-    # host="0.0.0.0" é crucial para que a aplicação seja acessível dentro de contêineres (como no Railway).
-    # Para produção, você pode remover o 'reload=True'.
+    # Inicia o servidor Uvicorn. Isto é o equivalente do app.run() para FastAPI.
+    # Não use debug=True ou reload=True em produção.
     uvicorn.run("app:app", host="0.0.0.0", port=port)
+
 
 
 
