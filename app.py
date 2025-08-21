@@ -13,7 +13,7 @@ from Crypto.Cipher import AES
 
 import FreeFire_pb2, main_pb2, AccountPersonalShow_pb2
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 # --- Constantes alinhadas com o código que funciona ---
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==') # Equivalente a "Yg&tc%DEuh6%Zc^8"
@@ -148,4 +148,5 @@ if __name__ == "__main__":
     # host="0.0.0.0" é crucial para que a aplicação seja acessível dentro de contêineres (como no Railway).
     # Para produção, você pode remover o 'reload=True'.
     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+
 
