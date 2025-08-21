@@ -1,3 +1,6 @@
+import uvicorn
+import os
+
 from fastapi import FastAPI, Query
 import httpx
 import asyncio
@@ -41,8 +44,6 @@ def decode_protobuf(encoded_data: bytes, message_type: Message) -> Message:
 
 
 # --- Funções principais ---
-# E modifique também a função get_access_token
-    
 async def get_access_token(uid: str, password: str) -> Tuple[str, str, int]:
     # --- ESTAS LINHAS PRECISAM ESTAR AQUI ---
     url = "https://ffmconnect.live.gop.garenanow.com/oauth/guest/token/grant"
@@ -66,8 +67,6 @@ async def get_access_token(uid: str, password: str) -> Tuple[str, str, int]:
     except httpx.RequestError as e:
         print(f"--- DEBUG: ERRO na requisição httpx: {e}")
         return "0", "0", 500
-
-  
 
 
 async def create_jwt(uid: str, password: str) -> Tuple[str, str, int]:
@@ -122,7 +121,7 @@ async def create_jwt(uid: str, password: str) -> Tuple[str, str, int]:
 # --- Rota da API ---
 @app.get("/create_jwt")
 async def generate_jwt(uid: str = Query(..., description="User ID"), password: str = Query(..., description="User Password")):
-    print("--- DEBUG: 1. Rota /create_jwt foi chamada.") # <--- ADICIONE AQUI
+    print("--- DEBUG: 1. Rota /create_jwt foi chamada.")
     token, access_token, status_code = await create_jwt(uid, password)
     
     response_data = {
@@ -135,6 +134,17 @@ async def generate_jwt(uid: str = Query(..., description="User ID"), password: s
     else:
         response_data["status"] = f"error_{status_code}"
 
-    print(f"--- DEBUG: 4. Retornando resposta: {response_data}") # <--- ADICIONE AQUI
+    print(f"--- DEBUG: 4. Retornando resposta: {response_data}")
     return response_data
 
+# --- Bloco para iniciar o servidor ---
+# Este bloco será executado apenas quando você rodar o script diretamente (ex: python app.py)
+if __name__ == "__main__":
+    # O Railway define a variável de ambiente 'PORT'. Usamos ela se estiver disponível.
+    # Caso contrário (rodando localmente), usamos a porta 8000 como padrão.
+    port = int(os.environ.get("PORT", 8000))
+    
+    # Inicia o servidor Uvicorn.
+    # host="0.0.0.0" é crucial para que a aplicação seja acessível dentro de contêineres (como no Railway).
+    # Para produção, você pode remover o 'reload=True'.
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
