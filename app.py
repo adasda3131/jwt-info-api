@@ -13,7 +13,7 @@ from Crypto.Cipher import AES
 
 import FreeFire_pb2, main_pb2, AccountPersonalShow_pb2
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 # --- Constantes alinhadas com o código que funciona ---
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==') # Equivalente a "Yg&tc%DEuh6%Zc^8"
@@ -117,7 +117,13 @@ async def create_jwt(uid: str, password: str) -> Tuple[str, str, int]:
     except httpx.RequestError:
         return "0", access_token, 500
 
+# Adicione isso logo depois de app = FastAPI(debug=True)
 
+@app.get("/")
+def health_check():
+    return {"status": "ok", "message": "API is healthy"}
+
+# O resto do seu código continua abaixo...
 # --- Rota da API ---
 @app.get("/create_jwt")
 async def generate_jwt(uid: str = Query(..., description="User ID"), password: str = Query(..., description="User Password")):
@@ -147,6 +153,7 @@ if __name__ == "__main__":
     # Inicia o servidor Uvicorn.
     # host="0.0.0.0" é crucial para que a aplicação seja acessível dentro de contêineres (como no Railway).
     # Para produção, você pode remover o 'reload=True'.
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=port)
+
 
 
