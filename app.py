@@ -142,9 +142,10 @@ async def generate_jwt(uid: str = Query(..., description="User ID"), password: s
 if __name__ == "__main__":
     # O Railway define a variável de ambiente 'PORT'. Usamos ela se estiver disponível.
     # Caso contrário (rodando localmente), usamos a porta 8000 como padrão.
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 80))
     
     # Inicia o servidor Uvicorn.
     # host="0.0.0.0" é crucial para que a aplicação seja acessível dentro de contêineres (como no Railway).
     # Para produção, você pode remover o 'reload=True'.
     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+
