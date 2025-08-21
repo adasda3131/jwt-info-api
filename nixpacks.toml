@@ -1,0 +1,10 @@
+# Define as fases de configuração e construção
+[phases.setup]
+nixPkgs = ["python3", "pip"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+# Define o comando de início da aplicação
+[start]
+cmd = "gunicorn -w 1 -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:$PORT"
