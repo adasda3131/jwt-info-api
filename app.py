@@ -162,7 +162,8 @@ def health_check():
 # <<< MUDANÇA: Bloco de execução padrão do Flask
 if __name__ == "__main__":
     # Pega a porta do ambiente do Railway, ou usa 5552 como padrão
-    port = int(os.environ.get("PORT", 5550))
+    port = int(os.environ.get("PORT", 5552))
     # Inicia o servidor de desenvolvimento do Flask
     app.run(host="0.0.0.0", port=port)
+
 
